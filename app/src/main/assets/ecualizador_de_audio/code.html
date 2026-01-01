@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-
 <html class="dark" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Ecualizador de Audio</title>
+<title>Ecualizador de Audio Matrix</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -16,269 +14,136 @@
                     colors: {
                         "primary": "#06f957",
                         "primary-dim": "#048a31",
-                        "background-light": "#f5f8f6",
                         "background-dark": "#050a06",
                         "surface-dark": "#0f2316",
-                        "surface-light": "#ffffff",
                     },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neon': '0 0 10px rgba(6, 249, 87, 0.5), 0 0 20px rgba(6, 249, 87, 0.3)',
-                    },
-                    backgroundImage: {
-                        'grid-pattern': "linear-gradient(to right, #0f2316 1px, transparent 1px), linear-gradient(to bottom, #0f2316 1px, transparent 1px)",
-                    }
+                    fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
+                    boxShadow: { 'neon': '0 0 10px rgba(6, 249, 87, 0.5), 0 0 20px rgba(6, 249, 87, 0.3)' }
                 },
             },
         }
     </script>
 <style>
-        /* Custom range input styling for vertical sliders */
         input[type=range][orient=vertical] {
-            writing-mode: bt-lr; /* IE */
-            -webkit-appearance: slider-vertical; /* WebKit */
+            -webkit-appearance: slider-vertical;
             width: 8px;
             height: 100%;
-            padding: 0 5px;
         }
-
-        /* Custom slider styling to match the Matrix theme */
         .cyber-slider {
             -webkit-appearance: none;
             width: 4px;
-            height: 100%;
             background: #1f3a28;
-            border-radius: 2px;
             outline: none;
             cursor: pointer;
         }
-        
         .cyber-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%; 
             background: #06f957;
-            cursor: pointer;
             box-shadow: 0 0 10px #06f957;
             border: 2px solid #000;
         }
-
-        .cyber-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #06f957;
-            cursor: pointer;
-            box-shadow: 0 0 10px #06f957;
-            border: 2px solid #000;
-        }
-
-        /* Scanline effect */
         .scanlines {
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
+            background: linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.2) 2px);
             background-size: 100% 4px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 10;
+            position: fixed; inset: 0; pointer-events: none; z-index: 50;
         }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased overflow-hidden h-screen flex flex-col">
-<!-- Top App Bar -->
-<header class="flex items-center justify-between p-4 pt-6 z-20 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md sticky top-0 border-b border-primary/20">
-<button class="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-<span class="material-symbols-outlined text-primary" style="font-size: 24px;">arrow_back_ios_new</span>
-</button>
-<h1 class="text-xl font-bold tracking-widest uppercase text-primary drop-shadow-[0_0_5px_rgba(6,249,87,0.5)]">
-            Equalizer
-        </h1>
-<button class="relative flex size-10 items-center justify-center rounded-full bg-primary/10 border border-primary/30 text-primary shadow-neon">
-<span class="material-symbols-outlined" style="font-size: 24px;">mic</span>
-<span class="absolute -top-1 -right-1 flex h-3 w-3">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-</span>
-</button>
+</head>
+<body class="font-display bg-background-dark text-white antialiased overflow-hidden h-screen flex flex-col">
+<div class="scanlines"></div>
+
+<header class="flex items-center justify-between p-4 pt-6 z-20 bg-background-dark/90 backdrop-blur-md border-b border-primary/20">
+    <button onclick="window.history.back()" class="flex size-10 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+        <span class="material-symbols-outlined text-primary">arrow_back_ios_new</span>
+    </button>
+    <h1 class="text-xl font-bold tracking-widest uppercase text-primary">EQUALIZER</h1>
+    <button class="relative flex size-10 items-center justify-center rounded-full bg-primary/10 border border-primary/30 shadow-neon">
+        <span class="material-symbols-outlined text-primary">mic</span>
+    </button>
 </header>
-<main class="flex-1 overflow-y-auto relative flex flex-col gap-6 p-4 pb-24">
-<!-- Matrix Background Effect Overlay -->
-<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0" data-alt="Faint matrix code rain background pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDmRrLoQy1xWTChO86En_zGKOd_mrCzOrsKsInukyC9nFHdxCgELYxxN8NP3m2QzMF-3pU7FpLQKlsJs-kqy6N3ty7u134raIAM_On4_0wEI6CpkX4FHCZKvp7-M67yD6Hemhf3XB4R6QJjpGkCtM8cuDooKMA2nD1PpNRwSYlkr8WKfmDe_r0OKHnJqOvwAYznH56UTNd_pgv9Q8_Kg94tIHntteZpbVjxJLeMkWjdkm7Z-uDIt4eApjvyRTXqdZC9IIU4RH1u2H0a'); background-size: cover; background-position: center;"></div>
-<div class="scanlines opacity-30 fixed inset-0 z-0"></div>
-<!-- Frequency Visualizer -->
-<section class="relative z-10 w-full rounded-xl bg-surface-dark/80 border border-primary/20 backdrop-blur-sm p-4 shadow-lg overflow-hidden group">
-<div class="flex justify-between items-center mb-3">
-<h3 class="text-xs font-bold uppercase tracking-widest text-primary/70">Spectrum Analyzer</h3>
-<span class="text-[10px] font-mono text-primary/50 animate-pulse">LIVE FEED</span>
-</div>
-<!-- Grid Background -->
-<div class="absolute inset-0 bg-[linear-gradient(rgba(6,249,87,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,249,87,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
-<div class="h-32 flex items-end justify-between gap-1 px-2 relative">
-<!-- Visualizer Bars -->
-<div class="w-full h-[40%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-<div class="w-full h-[65%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.2s_ease-in-out_infinite]"></div>
-<div class="w-full h-[30%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.8s_ease-in-out_infinite]"></div>
-<div class="w-full h-[85%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.1s_ease-in-out_infinite]"></div>
-<div class="w-full h-[55%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.6s_ease-in-out_infinite]"></div>
-<div class="w-full h-[70%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.3s_ease-in-out_infinite]"></div>
-<div class="w-full h-[45%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.7s_ease-in-out_infinite]"></div>
-<div class="w-full h-[90%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.4s_ease-in-out_infinite]"></div>
-<div class="w-full h-[60%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.9s_ease-in-out_infinite]"></div>
-<div class="w-full h-[35%] bg-gradient-to-t from-primary/80 to-primary/10 rounded-t-sm animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-<!-- Floating Line Overlay -->
-<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-60" preserveaspectratio="none">
-<path d="M0,80 Q20,60 40,90 T80,50 T120,70 T160,30 T200,60 T240,40 T280,80 T320,60" fill="none" stroke="#06f957" stroke-width="2" vector-effect="non-scaling-stroke"></path>
-</svg>
-</div>
-</section>
-<!-- Presets (Chips) -->
-<section class="relative z-10 w-full overflow-x-auto no-scrollbar pb-2">
-<div class="flex gap-3 px-1 min-w-max">
-<button class="group flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-primary text-black font-bold text-sm shadow-neon border border-primary transition-all">
-<span class="material-symbols-outlined text-[18px]">graphic_eq</span>
-                    Cyberpunk
-                </button>
-<button class="group flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary/80 font-medium text-sm hover:border-primary hover:text-primary hover:bg-surface-dark/80 hover:shadow-neon transition-all">
-                    Bass Boost
-                </button>
-<button class="group flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary/80 font-medium text-sm hover:border-primary hover:text-primary hover:bg-surface-dark/80 hover:shadow-neon transition-all">
-                    Vocal
-                </button>
-<button class="group flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary/80 font-medium text-sm hover:border-primary hover:text-primary hover:bg-surface-dark/80 hover:shadow-neon transition-all">
-                    Rock
-                </button>
-<button class="group flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary/80 font-medium text-sm hover:border-primary hover:text-primary hover:bg-surface-dark/80 hover:shadow-neon transition-all">
-                    Flat
-                </button>
-</div>
-</section>
-<!-- Main Equalizer Sliders -->
-<section class="relative z-10 flex-1 flex flex-col justify-center min-h-[280px] bg-surface-dark/50 border border-primary/10 rounded-xl p-4 backdrop-blur-sm">
-<div class="flex justify-between items-end h-full px-2">
-<!-- Band 1 -->
-<div class="flex flex-col items-center gap-3 h-full group">
-<span class="text-primary font-mono text-xs font-bold">+2dB</span>
-<div class="relative flex-1 w-10 flex justify-center py-2 bg-surface-dark rounded-full border border-primary/10 group-hover:border-primary/40 transition-colors">
-<div class="absolute bottom-2 top-2 w-1 bg-gradient-to-t from-primary/10 via-primary/30 to-primary/10 rounded-full"></div>
-<input class="cyber-slider absolute h-[90%] top-[5%] appearance-none bg-transparent [&amp;::-webkit-slider-thumb]:shadow-[0_0_15px_#06f957] z-20" max="12" min="-12" orient="vertical" type="range" value="2"/>
-</div>
-<span class="text-primary/70 text-[10px] font-bold tracking-widest">60Hz</span>
-</div>
-<!-- Band 2 -->
-<div class="flex flex-col items-center gap-3 h-full group">
-<span class="text-primary/70 font-mono text-xs">+4dB</span>
-<div class="relative flex-1 w-10 flex justify-center py-2 bg-surface-dark rounded-full border border-primary/10 group-hover:border-primary/40 transition-colors">
-<div class="absolute bottom-2 top-2 w-1 bg-gradient-to-t from-primary/10 via-primary/30 to-primary/10 rounded-full"></div>
-<input class="cyber-slider absolute h-[90%] top-[5%] appearance-none bg-transparent z-20" max="12" min="-12" orient="vertical" type="range" value="4"/>
-</div>
-<span class="text-primary/70 text-[10px] font-bold tracking-widest">230Hz</span>
-</div>
-<!-- Band 3 -->
-<div class="flex flex-col items-center gap-3 h-full group">
-<span class="text-primary/70 font-mono text-xs">-1dB</span>
-<div class="relative flex-1 w-10 flex justify-center py-2 bg-surface-dark rounded-full border border-primary/10 group-hover:border-primary/40 transition-colors">
-<div class="absolute bottom-2 top-2 w-1 bg-gradient-to-t from-primary/10 via-primary/30 to-primary/10 rounded-full"></div>
-<input class="cyber-slider absolute h-[90%] top-[5%] appearance-none bg-transparent z-20" max="12" min="-12" orient="vertical" type="range" value="-1"/>
-</div>
-<span class="text-primary/70 text-[10px] font-bold tracking-widest">910Hz</span>
-</div>
-<!-- Band 4 -->
-<div class="flex flex-col items-center gap-3 h-full group">
-<span class="text-primary/70 font-mono text-xs">+3dB</span>
-<div class="relative flex-1 w-10 flex justify-center py-2 bg-surface-dark rounded-full border border-primary/10 group-hover:border-primary/40 transition-colors">
-<div class="absolute bottom-2 top-2 w-1 bg-gradient-to-t from-primary/10 via-primary/30 to-primary/10 rounded-full"></div>
-<input class="cyber-slider absolute h-[90%] top-[5%] appearance-none bg-transparent z-20" max="12" min="-12" orient="vertical" type="range" value="3"/>
-</div>
-<span class="text-primary/70 text-[10px] font-bold tracking-widest">4kHz</span>
-</div>
-<!-- Band 5 -->
-<div class="flex flex-col items-center gap-3 h-full group">
-<span class="text-primary/70 font-mono text-xs">0dB</span>
-<div class="relative flex-1 w-10 flex justify-center py-2 bg-surface-dark rounded-full border border-primary/10 group-hover:border-primary/40 transition-colors">
-<div class="absolute bottom-2 top-2 w-1 bg-gradient-to-t from-primary/10 via-primary/30 to-primary/10 rounded-full"></div>
-<input class="cyber-slider absolute h-[90%] top-[5%] appearance-none bg-transparent z-20" max="12" min="-12" orient="vertical" type="range" value="0"/>
-</div>
-<span class="text-primary/70 text-[10px] font-bold tracking-widest">14kHz</span>
-</div>
-</div>
-</section>
-<!-- Knobs / Additional Controls -->
-<section class="relative z-10 grid grid-cols-2 gap-4">
-<!-- Bass Boost Dial Widget -->
-<div class="bg-surface-dark/80 border border-primary/20 rounded-xl p-3 flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
-<div class="relative size-16 rounded-full border-4 border-surface-dark shadow-[0_0_10px_rgba(6,249,87,0.2)] bg-black flex items-center justify-center">
-<!-- Ring -->
-<svg class="absolute inset-0 size-full -rotate-90 transform" viewbox="0 0 36 36">
-<path class="text-gray-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
-<path class="text-primary drop-shadow-[0_0_3px_#06f957]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="70, 100" stroke-width="3"></path>
-</svg>
-<span class="material-symbols-outlined text-primary text-xl">speaker</span>
-</div>
-<div class="text-center">
-<p class="text-xs text-white font-bold uppercase tracking-wider">Bass Boost</p>
-<p class="text-[10px] text-primary/60 font-mono">70%</p>
-</div>
-</div>
-<!-- Virtualizer Dial Widget -->
-<div class="bg-surface-dark/80 border border-primary/20 rounded-xl p-3 flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
-<div class="relative size-16 rounded-full border-4 border-surface-dark shadow-[0_0_10px_rgba(6,249,87,0.2)] bg-black flex items-center justify-center">
-<!-- Ring -->
-<svg class="absolute inset-0 size-full -rotate-90 transform" viewbox="0 0 36 36">
-<path class="text-gray-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
-<path class="text-primary drop-shadow-[0_0_3px_#06f957]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="30, 100" stroke-width="3"></path>
-</svg>
-<span class="material-symbols-outlined text-primary text-xl">surround_sound</span>
-</div>
-<div class="text-center">
-<p class="text-xs text-white font-bold uppercase tracking-wider">3D Effect</p>
-<p class="text-[10px] text-primary/60 font-mono">30%</p>
-</div>
-</div>
-</section>
+
+<main class="flex-1 overflow-y-auto relative flex flex-col gap-6 p-4 pb-32">
+    <section class="relative z-10 w-full rounded-xl bg-surface-dark/80 border border-primary/20 p-4 shadow-lg">
+        <div class="flex justify-between items-center mb-3 text-[10px] font-mono text-primary/70">
+            <span>SPECTRUM_ANALYZER</span>
+            <span class="animate-pulse">LIVE_DATA</span>
+        </div>
+        <div class="h-24 flex items-end justify-between gap-1 px-2">
+            <div class="w-full bg-primary/60 animate-[pulse_1s_infinite] h-[40%]"></div>
+            <div class="w-full bg-primary/80 animate-[pulse_1.2s_infinite] h-[70%]"></div>
+            <div class="w-full bg-primary/40 animate-[pulse_0.8s_infinite] h-[30%]"></div>
+            <div class="w-full bg-primary animate-[pulse_1.5s_infinite] h-[90%]"></div>
+            <div class="w-full bg-primary/70 animate-[pulse_1.1s_infinite] h-[60%]"></div>
+            <div class="w-full bg-primary/50 animate-[pulse_1.3s_infinite] h-[50%]"></div>
+        </div>
+    </section>
+
+    <section class="relative z-10 flex gap-3 overflow-x-auto no-scrollbar py-2">
+        <button class="px-5 py-2 rounded-lg bg-primary text-black font-bold text-xs shadow-neon">CYBERPUNK</button>
+        <button class="px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary text-xs">BASS BOOST</button>
+        <button class="px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary text-xs">ROCK</button>
+        <button class="px-5 py-2 rounded-lg bg-surface-dark border border-primary/30 text-primary text-xs">FLAT</button>
+    </section>
+
+    <section class="relative z-10 flex-1 flex justify-between bg-surface-dark/50 border border-primary/10 rounded-xl p-6">
+        <div class="flex flex-col items-center gap-3 h-full">
+            <span id="val-60" class="text-primary font-mono text-[10px]">+2dB</span>
+            <div class="relative flex-1 w-8 flex justify-center py-2 bg-black/40 rounded-full border border-primary/10">
+                <input class="cyber-slider" type="range" min="-12" max="12" value="2" orient="vertical" oninput="updateVal('val-60', this.value)">
+            </div>
+            <span class="text-primary/70 text-[10px] font-bold">60Hz</span>
+        </div>
+        <div class="flex flex-col items-center gap-3 h-full">
+            <span id="val-230" class="text-primary font-mono text-[10px]">+4dB</span>
+            <div class="relative flex-1 w-8 flex justify-center py-2 bg-black/40 rounded-full border border-primary/10">
+                <input class="cyber-slider" type="range" min="-12" max="12" value="4" orient="vertical" oninput="updateVal('val-230', this.value)">
+            </div>
+            <span class="text-primary/70 text-[10px] font-bold">230Hz</span>
+        </div>
+        <div class="flex flex-col items-center gap-3 h-full">
+            <span id="val-910" class="text-primary font-mono text-[10px]">0dB</span>
+            <div class="relative flex-1 w-8 flex justify-center py-2 bg-black/40 rounded-full border border-primary/10">
+                <input class="cyber-slider" type="range" min="-12" max="12" value="0" orient="vertical" oninput="updateVal('val-910', this.value)">
+            </div>
+            <span class="text-primary/70 text-[10px] font-bold">910Hz</span>
+        </div>
+        <div class="flex flex-col items-center gap-3 h-full">
+            <span id="val-4k" class="text-primary font-mono text-[10px]">+3dB</span>
+            <div class="relative flex-1 w-8 flex justify-center py-2 bg-black/40 rounded-full border border-primary/10">
+                <input class="cyber-slider" type="range" min="-12" max="12" value="3" orient="vertical" oninput="updateVal('val-4k', this.value)">
+            </div>
+            <span class="text-primary/70 text-[10px] font-bold">4kHz</span>
+        </div>
+    </section>
 </main>
-<!-- Bottom Player Bar (Mini) -->
-<footer class="fixed bottom-0 left-0 w-full bg-black border-t border-primary/20 p-3 pb-6 z-30">
-<div class="flex items-center justify-between gap-4">
-<!-- Song Info -->
-<div class="flex items-center gap-3 flex-1 min-w-0">
-<div class="size-12 rounded bg-surface-dark border border-primary/30 flex items-center justify-center overflow-hidden shrink-0">
-<span class="material-symbols-outlined text-primary/50 text-2xl">album</span>
-</div>
-<div class="flex flex-col overflow-hidden">
-<p class="text-white text-sm font-bold truncate">System Override</p>
-<p class="text-primary/60 text-xs truncate">Cyber Protocol</p>
-</div>
-</div>
-<!-- Controls -->
-<div class="flex items-center gap-4">
-<button class="text-white/70 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-3xl">skip_previous</span>
-</button>
-<button class="size-12 flex items-center justify-center rounded-full bg-primary text-black hover:bg-white transition-colors shadow-neon">
-<span class="material-symbols-outlined text-3xl fill-current">pause</span>
-</button>
-<button class="text-white/70 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-3xl">skip_next</span>
-</button>
-</div>
-</div>
+
+<footer class="fixed bottom-0 left-0 w-full bg-black border-t border-primary/20 p-4 pb-8 z-30">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="size-10 rounded bg-primary/20 flex items-center justify-center border border-primary/40">
+                <span class="material-symbols-outlined text-primary text-xl animate-spin">album</span>
+            </div>
+            <div>
+                <p class="text-white text-xs font-bold">System Override</p>
+                <p class="text-primary/60 text-[10px]">Cyber Protocol</p>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <span class="material-symbols-outlined text-primary">skip_previous</span>
+            <span class="material-symbols-outlined text-primary">pause_circle</span>
+            <span class="material-symbols-outlined text-primary">skip_next</span>
+        </div>
+    </div>
 </footer>
+
+<script>
+    // Función para actualizar los valores de dB en pantalla
+    function updateVal(id, val) {
+        const text = val > 0 ? `+${val}dB` : `${val}dB`;
+        document.getElementById(id).innerText = text;
+    }
+</script>
 </body></html>
