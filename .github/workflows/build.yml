@@ -18,14 +18,15 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    # Eliminamos el comando 'gradle wrapper' que forzaba la versión 9.2.1
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    # Esto instala Gradle 8.7 directamente en el servidor de GitHub
+    - name: Setup Gradle 8.7
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.7
 
+    # IMPORTANTE: Aquí usamos 'gradle', NO './gradlew'
     - name: Build with Gradle
-      # Usamos el wrapper del proyecto directamente
-      run: ./gradlew assembleDebug --stacktrace
-      continue-on-error: false
+      run: gradle assembleDebug --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
