@@ -22,6 +22,6 @@ public class MainActivity extends AppCompatActivity {
         myWebView.setWebViewClient(new WebViewClient());
         
         // Carga el archivo desde assets
-        myWebView.loadUrl("file:///android_asset/splash_screen_anónimo/code.html");
+        myWebView.loadUrl("file:///android_asset/splash_screen_anonimo/code.html");
     }
 }
