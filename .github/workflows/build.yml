@@ -18,14 +18,12 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Validate Gradle Wrapper
-      run: |
-        if [ ! -f gradlew ]; then
-          gradle wrapper
-        fi
-        chmod +x gradlew
+    # Eliminamos el comando 'gradle wrapper' que forzaba la versión 9.2.1
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
 
     - name: Build with Gradle
+      # Usamos el wrapper del proyecto directamente
       run: ./gradlew assembleDebug --stacktrace
       continue-on-error: false
 
